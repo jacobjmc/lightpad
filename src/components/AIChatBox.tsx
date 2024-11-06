@@ -2,6 +2,9 @@
 import { cn } from "@/lib/utils";
 import { useChat } from "ai/react";
 import {
+  ArrowUp,
+  ArrowUpCircle,
+  ArrowUpNarrowWide,
   Bot,
   Copy,
   ListRestart,
@@ -77,7 +80,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
     fetchMessages();
   };
 
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -105,15 +108,15 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
   return (
     <div
       className={cn(
-        "mx-auto mb-10 h-screen w-full items-center p-1 xl:max-w-[1200px]",
+        "mx-auto mb-10 h-screen w-full items-center p-1 xl:max-w-[900px]",
       )}
     >
-      <div className="flex h-[650px] flex-col rounded-lg border border-indigo-700 border-opacity-50 bg-white shadow-xl dark:bg-background lg:h-[900px]">
+      <div className="flex h-[650px] flex-col rounded-lg bg-white dark:bg-background lg:h-[900px]">
         <p className="mx-auto mt-4 font-mono text-lg font-semibold text-muted-foreground">
           AI Chat
         </p>
 
-        <div className="mt-3 h-full overflow-y-auto px-3" ref={scrollRef}>
+        <div className="mt-3 h-auto px-3" ref={scrollRef}>
           {messages.map((message) => (
             <ChatMessage
               isLoading={isLoading}
@@ -150,20 +153,34 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
             </div>
           )}
         </div>
-        <form onSubmit={handleSubmit} className="m-3 flex flex-col gap-2 ">
-          <Textarea
-            className="resize-none shadow-md"
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Ask a question or write some details for the AI to generate a post from..."
-            ref={inputRef}
-          />
+        <form
+          onSubmit={handleSubmit}
+          className="m-3 mt-auto flex flex-col gap-2 "
+        >
+          <div className="flex items-center rounded-xl border border-input bg-slate-100 dark:bg-background">
+            <Input
+              className="h-12 flex-1 resize-none border-none bg-transparent focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0"
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Ask a question or write some details for the AI to generate a post from..."
+              ref={inputRef}
+            />
+            <Button
+              size="icon"
+              className="z-50 mr-1 rounded-full bg-foreground hover:bg-foreground/70 disabled:bg-muted-foreground"
+              type="submit"
+              isLoading={isLoading}
+              disabled={!input}
+            >
+              <ArrowUp className="h-6 w-6 text-background" />
+            </Button>
+          </div>
 
           <div className="flex-col space-y-2">
             <div className="flex max-w-[500px] flex-col-reverse space-y-1 md:max-w-full md:flex-row md:space-x-2 md:space-y-0">
               <Button
                 title="Regenerate response"
-                className="my-1 w-full text-xs shadow-md md:my-0 md:w-[200px]"
+                className="my-1 w-full rounded-xl text-xs md:my-0 md:w-[200px]"
                 disabled={isLoading}
                 variant={"outline"}
                 onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
@@ -175,19 +192,11 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               <Button
                 title="Clear chat"
                 variant="outline"
-                className="my-1 w-full text-xs shadow-md md:my-0 md:w-[200px]"
+                className="my-1 w-full rounded-xl text-xs md:my-0 md:w-[200px]"
                 type="button"
                 onClick={handleDelete}
               >
                 <Trash className="h-4" /> Clear chat history
-              </Button>
-
-              <Button
-                className="w-full shadow-md md:flex"
-                type="submit"
-                isLoading={isLoading}
-              >
-                Send
               </Button>
             </div>
           </div>
@@ -210,24 +219,6 @@ function ChatMessage({
   const isAiMessage = role === "assistant";
 
   const { theme, systemTheme } = useTheme();
-
-  const [addNoteLoading, setAddNoteLoading] = useState(false);
-
-  const handleAddNote = async () => {
-    setAddNoteLoading(true);
-    const input = content.split("\n");
-    const title = input[0].replace("Title: ", "");
-    const noteContent = input.slice(2).join("\n").replace("Content:\n", "");
-    const response = await fetch("/api/notes", {
-      method: "POST",
-      body: JSON.stringify({ title: title, content: noteContent }),
-    });
-
-    if (!response.ok) throw Error("Status code: " + response.status);
-    setAddNoteLoading(false);
-    toast.success("Note created");
-    router.refresh();
-  };
 
   return (
     <div
@@ -256,28 +247,13 @@ function ChatMessage({
       <div className="flex flex-col space-y-2 ">
         <p
           className={cn(
-            "whitespace-pre-line rounded-md border  px-3 py-2",
-            theme === "dark" || (systemTheme === "dark" && isAiMessage)
-              ? "text-black"
-              : "text-white",
-            isAiMessage ? "bg-gray-100" : "bg-indigo-600",
+            "whitespace-pre-line rounded-xl  px-3 py-2",
+            systemTheme === "dark" && isAiMessage ? "text-black" : "text-white",
+            isAiMessage ? "bg-slate-100" : "bg-indigo-600",
           )}
         >
           {content}
         </p>
-        {isAiMessage && (
-          <div className="flex space-x-4">
-            <Button
-              className="h-min w-full shadow-md"
-              disabled={isLoading || addNoteLoading}
-              isLoading={addNoteLoading}
-              variant={"outline"}
-              onClick={handleAddNote}
-            >
-              Save response to notes
-            </Button>
-          </div>
-        )}
       </div>
 
       {!isAiMessage && user?.imageUrl && (
