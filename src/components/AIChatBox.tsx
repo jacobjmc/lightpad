@@ -148,8 +148,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           {!error && messages.length === 0 && !messagesLoading && (
             <div className="flex h-full flex-col items-center justify-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
               <Bot size={70} />
-              Ask the AI a question or write some details for the AI to generate
-              a post from
+              Ask the AI a question...
             </div>
           )}
         </div>
