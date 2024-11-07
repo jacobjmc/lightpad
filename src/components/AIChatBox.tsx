@@ -201,6 +201,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
                 variant="outline"
                 className="my-1 w-full rounded-xl text-xs md:my-0 md:w-[200px]"
                 type="button"
+                disabled={isLoading}
                 onClick={handleDelete}
               >
                 <Trash className="h-4" /> Clear chat history
@@ -214,7 +215,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
 };
 
 function ChatMessage({
-  message: { role, content },
+  message,
   isLoading,
 }: {
   message: Pick<Message, "role" | "content">;
@@ -223,20 +224,35 @@ function ChatMessage({
   const { user } = useUser();
   const router = useRouter();
 
-  const isAiMessage = role === "assistant";
+  const isAiMessage = message.role === "assistant";
 
   const { theme, systemTheme } = useTheme();
 
   const scrollToMessageRef = useRef<HTMLDivElement>(null);
 
+  // Helper function to check if the user is near the bottom of the chat
+  const isNearBottom = () => {
+    if (!scrollToMessageRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollToMessageRef.current.parentElement!;
+    return scrollHeight - scrollTop <= clientHeight + 50; // Adjust the threshold as needed
+  };
+
+  useEffect(() => {
+    if (scrollToMessageRef.current && isNearBottom()) {
+      scrollToMessageRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [message]);
+
   useEffect(() => {
     if (scrollToMessageRef.current) {
       scrollToMessageRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "end",
       });
     }
-  }, [isAiMessage]);
+  }, []);
 
   return (
     <div>
@@ -253,7 +269,7 @@ function ChatMessage({
             variant={"ghost"}
             size={"icon"}
             onClick={() => {
-              navigator.clipboard.writeText(content);
+              navigator.clipboard.writeText(message.content);
               toast.success("Copied to clipboard");
             }}
           >
@@ -261,7 +277,7 @@ function ChatMessage({
           </Button>
           {isAiMessage && <Bot className="ml-2 shrink-0 text-primary" />}
         </div>
-        <div className="flex flex-col space-y-2 ">
+        <div className="flex flex-col space-y-2">
           <p
             className={cn(
               "prose rounded-xl px-3 py-2",
@@ -271,7 +287,7 @@ function ChatMessage({
               isAiMessage ? "bg-slate-100" : "bg-indigo-600",
             )}
           >
-            <ReactMarkdown>{content}</ReactMarkdown>
+            <ReactMarkdown>{message.content}</ReactMarkdown>
           </p>
         </div>
         {!isAiMessage && user?.imageUrl && (
@@ -287,7 +303,7 @@ function ChatMessage({
         )}
       </div>
 
-      <div className="relative inset-y-20 bottom-0" ref={scrollToMessageRef} />
+      <div className="relative inset-y-44 bottom-0" ref={scrollToMessageRef} />
     </div>
   );
 }
