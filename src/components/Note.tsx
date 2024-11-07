@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddEditNoteDialog from "./AddEditNoteDialog";
+import createDOMPurify from "dompurify";
 
 interface NoteProps {
   note: NoteModel;
@@ -17,12 +18,19 @@ interface NoteProps {
 
 const Note = ({ note }: NoteProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [sanitizedContent, setSanitizedContent] = useState("");
 
   const wasUpdated = note.updatedAt > note.createdAt;
 
   const createdUpdatedAtTimestamp = (
     wasUpdated ? note.updatedAt : note.createdAt
   ).toDateString();
+
+  useEffect(() => {
+    if (note?.content !== null) {
+      setSanitizedContent(createDOMPurify().sanitize(note.content));
+    }
+  }, [note.content]);
 
   return (
     <>
@@ -38,7 +46,10 @@ const Note = ({ note }: NoteProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="whitespace-pre-line">{note.content}</p>
+          <div
+            className="prose prose-sm dark:prose-invert prose-headings:font-title font-default whitespace-pre-line"
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+          ></div>
         </CardContent>
       </Card>
       <AddEditNoteDialog

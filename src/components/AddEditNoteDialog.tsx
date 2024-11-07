@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Note } from "@prisma/client";
 import { useState } from "react";
+import AiEditor from "./editor/ai-editor";
+import { HTMLContent } from "@tiptap/react";
 
 interface AddNoteDialogProps {
   open: boolean;
@@ -127,10 +129,16 @@ const AddEditNoteDialog = ({
                 <FormItem>
                   <FormLabel>Note content</FormLabel>
                   <FormControl>
-                    <Textarea
+                    {/* <Textarea
                       className="h-[500px]"
                       placeholder="Note content"
                       {...field}
+                    /> */}
+                    <AiEditor
+                      onUpdate={(value) => {
+                        field.onChange(value);
+                      }}
+                      existingContent={field.value}
                     />
                   </FormControl>
                   <FormMessage />
