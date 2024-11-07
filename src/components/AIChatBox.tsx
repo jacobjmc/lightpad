@@ -139,7 +139,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           )}
 
           {messagesLoading && (
-            <div className="flex h-full flex-col items-center justify-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
+            <div className="mt-20 flex h-full flex-col items-center justify-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
               <Loader2 className="animate-spin" size={70} />
               Loading...
             </div>
@@ -161,7 +161,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               className="h-12 flex-1 resize-none border-none bg-transparent focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0"
               value={input}
               onChange={handleInputChange}
-              placeholder="Ask a question or write some details for the AI to generate a post from..."
+              placeholder="Ask a question..."
               ref={inputRef}
             />
             <Button
