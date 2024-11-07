@@ -130,13 +130,8 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               message={{ role: "assistant", content: "Thinking..." }}
             />
           )}
-          {error && (
-            <div className="ms-12 flex space-x-2">
-              <Button className="" variant={"destructive"}>
-                <p className="">{error.message}</p>
-              </Button>
-            </div>
-          )}
+        </div>
+        <div className="mt-auto">
           {messagesLoading && (
             <div className="mt-20 flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
@@ -152,6 +147,14 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
                 <Bot size={70} />
                 Ask the AI a question...
               </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="ms-12 flex space-x-2">
+              <Button className="" variant={"destructive"}>
+                <p className="">{error.message}</p>
+              </Button>
             </div>
           )}
         </div>

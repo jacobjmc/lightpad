@@ -16,8 +16,8 @@ import { ModalProvider } from "@/components/modal-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Educator",
-  description: "An app for writing daily posts with AI Interaction",
+  title: "Lightpad - AI Powered Notes",
+  description: "An app for taking notes and getting AI powered responses.",
 };
 
 export default function RootLayout({
