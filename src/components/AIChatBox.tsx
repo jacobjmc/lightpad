@@ -244,7 +244,7 @@ function ChatMessage({
         behavior: "smooth",
       });
     }
-  }, [message]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (scrollToMessageRef.current) {

@@ -27,7 +27,7 @@ const NavBar = ({ apiLimitCount = 0, isPro = false }: NavBarProps) => {
   const currentPath = usePathname();
   return (
     <>
-      <div className="fixed top-0 w-full bg-white p-4 shadow dark:bg-background">
+      <div className="sticky top-0 bg-white p-4 shadow dark:bg-background">
         <div className="m-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <Link href="/notes" className="flex items-center gap-1">
             <Image src={logo} alt="notes app logo" width={40} height={40} />
