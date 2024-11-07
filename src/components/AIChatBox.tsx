@@ -137,18 +137,21 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               </Button>
             </div>
           )}
-
           {messagesLoading && (
-            <div className="mt-20 flex h-full flex-col items-center justify-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
-              <Loader2 className="animate-spin" size={70} />
-              Loading...
+            <div className="mt-20 flex h-full items-center justify-center">
+              <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
+                <Loader2 className="animate-spin" size={70} />
+                Loading...
+              </div>
             </div>
           )}
 
           {!error && messages.length === 0 && !messagesLoading && (
-            <div className="flex h-full flex-col items-center justify-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
-              <Bot size={70} />
-              Ask the AI a question...
+            <div className="mt-20 flex h-full items-center justify-center">
+              <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
+                <Bot size={70} />
+                Ask the AI a question...
+              </div>
             </div>
           )}
         </div>

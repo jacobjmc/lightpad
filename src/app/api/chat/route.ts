@@ -10,6 +10,8 @@ import { NextResponse } from "next/server";
 import { checkSubscription } from "@/lib/subscription";
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 export const POST = async (req: Request) => {
   try {
@@ -31,6 +33,39 @@ export const POST = async (req: Request) => {
 
     if (!freeTrial && !isPro) {
       return new NextResponse("Free trial has expired.", { status: 403 });
+    }
+
+    if (
+      process.env.UPSTASH_REDIS_REST_URL &&
+      process.env.UPSTASH_REDIS_REST_TOKEN
+    ) {
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+      const ip = req.headers.get("x-forwarded-for");
+      const ratelimit = new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(40, "1 d"),
+      });
+
+      const { success, limit, reset, remaining } = await ratelimit.limit(
+        `lightpad_chat_ratelimit_${ip}`,
+      );
+
+      if (!success) {
+        return new Response(
+          "You have reached your request limit for the day.",
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString(),
+            },
+          },
+        );
+      }
     }
 
     const messageContent = messages[messages.length - 1].content as string;
