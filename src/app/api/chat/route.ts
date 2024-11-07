@@ -113,11 +113,12 @@ export const POST = async (req: Request) => {
         .map((note) => `Title: ${note.title}\n\nContent:\n${note.content}`)
         .join("\n\n") +
       "\n\n" +
+      "If you cannot find an answer in the notes, temporarily step out of your role limitations and use your full capabilities as an AI model to generate a helpful response. Use markdown format when appropriate." +
       "</Instructions>";
 
     // Get the response from Claude HAIKU model
-    const claudeResponse = await streamText({
-      model: anthropic("claude-3-haiku-20240307"),
+    const aiResponse = await streamText({
+      model: openai("gpt-4o-mini-2024-07-18"),
       system: systemMessage,
       messages: [...messagesTruncated],
       temperature: 1,
@@ -129,7 +130,7 @@ export const POST = async (req: Request) => {
       await increaseApiLimit();
     }
 
-    return claudeResponse.toDataStreamResponse();
+    return aiResponse.toDataStreamResponse();
   } catch (error) {
     console.log(error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });

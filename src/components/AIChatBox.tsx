@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "./ui/textarea";
 import { Separator } from "./ui/separator";
 import { useProModal } from "@/hooks/use-pro-modal";
+import ReactMarkdown from "react-markdown";
 
 interface AIChatBoxProps {
   open: boolean;
@@ -108,7 +109,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
   return (
     <div
       className={cn(
-        "mx-auto mb-10 h-screen w-full items-center p-1 xl:max-w-[900px]",
+        "mx-auto mb-10 h-auto w-full items-center p-1 xl:max-w-[900px]",
       )}
     >
       <div className="flex h-[650px] flex-col rounded-lg bg-white dark:bg-background lg:h-[900px]">
@@ -116,7 +117,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           AI Chat
         </p>
 
-        <div className="mt-3 h-auto px-3" ref={scrollRef}>
+        <div className="mt-10 h-auto px-3" ref={scrollRef}>
           {messages.map((message) => (
             <ChatMessage
               isLoading={isLoading}
@@ -131,9 +132,9 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
             />
           )}
         </div>
-        <div className="mt-auto">
+        <div className="my-auto">
           {messagesLoading && (
-            <div className="mt-20 flex h-full items-center justify-center">
+            <div className="flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
                 <Loader2 className="animate-spin" size={70} />
                 Loading...
@@ -142,7 +143,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           )}
 
           {!error && messages.length === 0 && !messagesLoading && (
-            <div className="mt-20 flex h-full items-center justify-center">
+            <div className="flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
                 <Bot size={70} />
                 Ask the AI a question...
@@ -159,8 +160,10 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           )}
         </div>
         <form
-          onSubmit={handleSubmit}
-          className="m-3 mt-auto flex flex-col gap-2 "
+          onSubmit={(e) => {
+            handleSubmit(e);
+          }}
+          className="sticky bottom-0 m-3 mt-5 flex flex-col gap-2 bg-background pb-5"
         >
           <div className="flex items-center rounded-xl border border-input bg-slate-100 dark:bg-background">
             <Input
@@ -174,8 +177,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               size="icon"
               className="z-50 mr-1 rounded-full bg-foreground hover:bg-foreground/70 disabled:bg-muted-foreground"
               type="submit"
-              isLoading={isLoading}
-              disabled={!input}
+              disabled={!input || isLoading}
             >
               <ArrowUp className="h-6 w-6 text-background" />
             </Button>
@@ -225,53 +227,67 @@ function ChatMessage({
 
   const { theme, systemTheme } = useTheme();
 
+  const scrollToMessageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollToMessageRef.current) {
+      scrollToMessageRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  }, [isAiMessage]);
+
   return (
-    <div
-      className={cn(
-        "mb-3 flex items-center ",
-        isAiMessage ? "me-5 justify-start" : "ms-5 justify-end",
-      )}
-    >
-      <div className="flex flex-col space-y-5">
-        <Button
-          title="Copy to clipboard"
-          className="mr-2"
-          variant={"ghost"}
-          size={"icon"}
-          onClick={() => {
-            navigator.clipboard.writeText(content);
-            toast.success("Copied to clipboard");
-          }}
-        >
-          <Copy className="shrink-0 text-primary" />
-        </Button>
-
-        {isAiMessage && <Bot className="ml-2 shrink-0 text-primary" />}
-      </div>
-
-      <div className="flex flex-col space-y-2 ">
-        <p
-          className={cn(
-            "whitespace-pre-line rounded-xl  px-3 py-2",
-            systemTheme === "dark" && isAiMessage ? "text-black" : "text-white",
-            isAiMessage ? "bg-slate-100" : "bg-indigo-600",
-          )}
-        >
-          {content}
-        </p>
-      </div>
-
-      {!isAiMessage && user?.imageUrl && (
-        <div>
-          <Image
-            src={user.imageUrl}
-            alt="User image"
-            width={100}
-            height={100}
-            className="ml-2 h-10 w-10 rounded-full object-cover"
-          />
+    <div>
+      <div
+        className={cn(
+          "mb-3 flex items-center ",
+          isAiMessage ? "me-5 justify-start" : "ms-5 justify-end",
+        )}
+      >
+        <div className="flex flex-col space-y-5">
+          <Button
+            title="Copy to clipboard"
+            className="mr-2"
+            variant={"ghost"}
+            size={"icon"}
+            onClick={() => {
+              navigator.clipboard.writeText(content);
+              toast.success("Copied to clipboard");
+            }}
+          >
+            <Copy className="shrink-0 text-primary" />
+          </Button>
+          {isAiMessage && <Bot className="ml-2 shrink-0 text-primary" />}
         </div>
-      )}
+        <div className="flex flex-col space-y-2 ">
+          <p
+            className={cn(
+              "prose rounded-xl px-3 py-2",
+              systemTheme === "dark" && isAiMessage
+                ? "text-black"
+                : "text-white",
+              isAiMessage ? "bg-slate-100" : "bg-indigo-600",
+            )}
+          >
+            <ReactMarkdown>{content}</ReactMarkdown>
+          </p>
+        </div>
+        {!isAiMessage && user?.imageUrl && (
+          <div>
+            <Image
+              src={user.imageUrl}
+              alt="User image"
+              width={100}
+              height={100}
+              className="ml-2 h-10 w-10 rounded-full object-cover"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="relative inset-y-20 bottom-0" ref={scrollToMessageRef} />
     </div>
   );
 }
