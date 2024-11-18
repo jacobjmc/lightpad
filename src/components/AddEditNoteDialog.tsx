@@ -162,6 +162,7 @@ const AddEditNoteDialog = ({
                 <Button
                   className="w-full"
                   type="submit"
+                  isLoading={form.formState.isSubmitting}
                   disabled={
                     form.formState.isSubmitting ||
                     fieldUpdating ||
@@ -174,6 +175,7 @@ const AddEditNoteDialog = ({
                   <Button
                     className="w-full"
                     variant="destructive"
+                    isLoading={form.formState.isSubmitting || deleteInProgress}
                     disabled={form.formState.isSubmitting || deleteInProgress}
                     onClick={deleteNote}
                     type="button"
