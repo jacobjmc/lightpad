@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { FreeCounter } from "./free-counter";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { useClerk } from "@clerk/nextjs";
 
 interface NavBarProps {
   apiLimitCount: number;
@@ -36,7 +37,7 @@ const NavBar = ({ apiLimitCount = 0, isPro = false }: NavBarProps) => {
 
           <div className="hidden items-center gap-2 md:flex">
             <UserButton
-              afterSignOutUrl="/"
+              afterSignOutUrl={process.env.NEXT_PUBLIC_APP_URL}
               appearance={{
                 baseTheme: theme === "dark" ? dark : undefined,
                 elements: { avatarBox: { width: "2.5rem", height: "2.5rem" } },
