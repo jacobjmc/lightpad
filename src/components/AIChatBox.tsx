@@ -146,7 +146,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
             <div className="flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
                 <Bot size={70} />
-                Ask the AI a question...
+                Ask the AI a question about your notes...
               </div>
             </div>
           )}

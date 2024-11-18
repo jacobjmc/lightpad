@@ -7,6 +7,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -102,64 +105,62 @@ const AddEditNoteDialog = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="mt-10 max-h-screen max-w-[700px] overflow-y-scroll py-20 md:my-0 md:overflow-y-hidden md:p-6">
-        <DialogHeader>
-          <DialogTitle>{noteToEdit ? "Edit Note" : "Add Note"}</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Note title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Note title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Note content</FormLabel>
-                  <FormControl>
-                    {/* <Textarea
-                      className="h-[500px]"
-                      placeholder="Note content"
-                      {...field}
-                    /> */}
-                    <AiEditor
-                      onUpdate={(value) => {
-                        field.onChange(value);
-                      }}
-                      existingContent={field.value}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <div className="flex w-full flex-col gap-1">
+    <Dialog open={open} modal={false} onOpenChange={setOpen}>
+      <DialogContent
+        className="sm:max-w-[700px]"
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <div className="relative !z-[999]">
+          <DialogHeader>
+            <DialogTitle>{noteToEdit ? "Edit Note" : "Add Note"}</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Note title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Note title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Note content</FormLabel>
+                    <FormControl>
+                      <AiEditor
+                        onUpdate={(value) => {
+                          field.onChange(value);
+                        }}
+                        existingContent={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex w-full flex-col gap-2">
                 <Button
                   className="w-full"
                   type="submit"
-                  isLoading={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting}
                 >
                   Submit
                 </Button>
                 {noteToEdit && (
                   <Button
                     className="w-full"
-                    variant={"destructive"}
-                    isLoading={deleteInProgress}
-                    disabled={form.formState.isSubmitting}
+                    variant="destructive"
+                    disabled={form.formState.isSubmitting || deleteInProgress}
                     onClick={deleteNote}
                     type="button"
                   >
@@ -167,9 +168,9 @@ const AddEditNoteDialog = ({
                   </Button>
                 )}
               </div>
-            </DialogFooter>
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );
