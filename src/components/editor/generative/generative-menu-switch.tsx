@@ -19,13 +19,13 @@ const GenerativeMenuSwitch = ({
 }: GenerativeMenuSwitchProps) => {
   const { editor } = useEditor();
 
+  useEffect(() => {
+    if (editor && !open) removeAIHighlight(editor);
+  }, [editor, open]);
+
   if (!editor) {
     return null;
   }
-
-  useEffect(() => {
-    if (!open) removeAIHighlight(editor);
-  }, [open]);
 
   return (
     <EditorBubble
