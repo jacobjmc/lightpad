@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import { useChat } from "ai/react";
 import {
+  ArrowDownCircle,
   ArrowUp,
   ArrowUpCircle,
   ArrowUpNarrowWide,
@@ -112,7 +113,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
         "mx-auto mb-10 h-auto w-full items-center p-1 xl:max-w-[900px]",
       )}
     >
-      <div className="flex h-[650px] flex-col rounded-lg bg-white dark:bg-background lg:h-[900px]">
+      <div className="flex h-auto flex-col rounded-lg bg-white dark:bg-background lg:min-h-[600px]">
         <p className="mx-auto mt-4 font-mono text-lg font-semibold text-muted-foreground">
           AI Chat
         </p>
@@ -143,7 +144,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           )}
 
           {!error && messages.length === 0 && !messagesLoading && (
-            <div className="flex h-full items-center justify-center">
+            <div className=" flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-3 font-mono text-xl tracking-tighter text-muted-foreground">
                 <Bot size={70} />
                 Ask the AI a question about your notes...
@@ -165,7 +166,20 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           }}
           className="sticky bottom-0 m-3 mt-5 flex flex-col gap-2 bg-background pb-5"
         >
-          <div className="flex items-center rounded-xl border border-input bg-slate-100 dark:bg-background">
+          {/* TODO: Fix scroll button */}
+          {messages.length > 0 && (
+            <div className="relative flex justify-center">
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute bottom-0 left-auto rounded-full hover:bg-slate-200"
+                onClick={() => {}}
+              >
+                <ArrowDownCircle className="h-6 w-6" />
+              </Button>
+            </div>
+          )}
+          <div className="flex items-center rounded-xl border border-input bg-slate-100 px-2 dark:bg-background">
             <Input
               className="h-12 flex-1 resize-none border-none bg-transparent focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0"
               value={input}
