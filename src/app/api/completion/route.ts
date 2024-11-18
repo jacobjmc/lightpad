@@ -13,11 +13,12 @@ import { openai } from "@ai-sdk/openai";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { match } from "ts-pattern";
+import { revalidatePath } from "next/cache";
 
 export const POST = async (req: Request) => {
   try {
     const body = await req.json();
-    const { prompt, option, command } = body;
+    const { prompt, option, command, path } = body;
 
     const { userId } = auth();
 
@@ -165,6 +166,8 @@ export const POST = async (req: Request) => {
     if (!isPro) {
       await increaseApiLimit();
     }
+
+    revalidatePath("/notes");
 
     return result.toDataStreamResponse();
   } catch (error) {

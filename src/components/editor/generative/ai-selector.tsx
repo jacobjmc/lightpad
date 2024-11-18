@@ -15,7 +15,7 @@ import Magic from "@/components/ui/icons/magic";
 import { ScrollArea } from "../../ui/scroll-area";
 import AICompletionCommands from "./ai-completion-command";
 import AISelectorCommands from "./ai-selector-commands";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface AISelectorProps {
   open: boolean;
@@ -25,6 +25,7 @@ interface AISelectorProps {
 export function AISelector({ onOpenChange }: AISelectorProps) {
   const { editor } = useEditor();
   const [inputValue, setInputValue] = useState("");
+  const router = useRouter();
 
   const { completion, complete, isLoading } = useCompletion({
     // id: "novel",
@@ -34,6 +35,12 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
         toast.error("You have reached your request limit for the day.");
         return;
       }
+      if (response.status === 403) {
+        toast.error("Free trial has expired.");
+        return;
+      }
+
+      router.refresh();
     },
     onError: (e) => {
       toast.error(e.message);
