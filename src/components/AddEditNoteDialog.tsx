@@ -1,18 +1,8 @@
 import { CreateNoteSchema, createNoteSchema } from "@/lib/validation/note";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogPortal,
-  DialogOverlay,
-  DialogClose,
-} from "./ui/dialog";
+import { Dialog, DialogTitle, DialogContent, DialogHeader } from "./ui/dialog";
 import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import {
   Form,
   FormControl,
@@ -27,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { Note } from "@prisma/client";
 import { useEffect, useState } from "react";
 import AiEditor from "./editor/ai-editor";
-import { HTMLContent } from "@tiptap/react";
 
 interface AddNoteDialogProps {
   open: boolean;
@@ -41,7 +30,6 @@ const AddEditNoteDialog = ({
   noteToEdit,
 }: AddNoteDialogProps) => {
   const [deleteInProgress, setDeleteInProgess] = useState(false);
-  const [fieldUpdating, setFieldUpdating] = useState(false);
 
   const router = useRouter();
   const form = useForm<CreateNoteSchema>({
@@ -163,11 +151,7 @@ const AddEditNoteDialog = ({
                   className="w-full"
                   type="submit"
                   isLoading={form.formState.isSubmitting}
-                  disabled={
-                    form.formState.isSubmitting ||
-                    fieldUpdating ||
-                    deleteInProgress
-                  }
+                  disabled={form.formState.isSubmitting || deleteInProgress}
                 >
                   Submit
                 </Button>

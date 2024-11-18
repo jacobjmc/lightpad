@@ -157,5 +157,5 @@ export const DELETE = async (req: Request) => {
 };
 
 async function getEmbeddingForNote(title: string, content: string | undefined) {
-  return getEmbedding(title + "\n\n" + content ?? "");
+  return getEmbedding(title + "\n\n" + content || "");
 }

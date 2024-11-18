@@ -4,18 +4,11 @@ import { useChat } from "ai/react";
 import {
   ArrowDownCircle,
   ArrowUp,
-  ArrowUpCircle,
-  ArrowUpNarrowWide,
   Bot,
   Copy,
   ListRestart,
   Loader2,
-  RefreshCcw,
-  RefreshCcwDot,
-  Stars,
   Trash,
-  X,
-  XCircle,
 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -27,8 +20,6 @@ import { addAssistantMessage } from "@/lib/actions";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Textarea } from "./ui/textarea";
-import { Separator } from "./ui/separator";
 import { useProModal } from "@/hooks/use-pro-modal";
 import ReactMarkdown from "react-markdown";
 
@@ -246,7 +237,6 @@ function ChatMessage({
   isLoading?: boolean;
 }) {
   const { user } = useUser();
-  const router = useRouter();
 
   const isAiMessage = message.role === "assistant";
 
@@ -254,12 +244,11 @@ function ChatMessage({
 
   const scrollToMessageRef = useRef<HTMLDivElement>(null);
 
-  // Helper function to check if the user is near the bottom of the chat
   const isNearBottom = () => {
     if (!scrollToMessageRef.current) return false;
     const { scrollTop, scrollHeight, clientHeight } =
       scrollToMessageRef.current.parentElement!;
-    return scrollHeight - scrollTop <= clientHeight + 50; // Adjust the threshold as needed
+    return scrollHeight - scrollTop <= clientHeight + 50;
   };
 
   useEffect(() => {
