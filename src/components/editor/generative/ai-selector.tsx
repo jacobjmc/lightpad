@@ -26,11 +26,9 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
   const { editor } = useEditor();
   const [inputValue, setInputValue] = useState("");
 
-  const params = useParams<{ orgId: string; ticketNumber: string }>();
-
   const { completion, complete, isLoading } = useCompletion({
     // id: "novel",
-    api: `/api/messages/${params.orgId}/${params.ticketNumber}/completion`,
+    api: `/api/completion`,
     onResponse: (response) => {
       if (response.status === 429) {
         toast.error("You have reached your request limit for the day.");
@@ -53,7 +51,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
       {hasCompletion && (
         <div className="flex max-h-[400px]">
           <ScrollArea>
-            <div className="prose p-2 px-4 prose-sm">
+            <div className="prose prose-sm p-2 px-4">
               <Markdown>{completion}</Markdown>
             </div>
           </ScrollArea>
@@ -94,7 +92,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
 
                 const slice = editor.state.selection.content();
                 const text = editor.storage.markdown.serializer.serialize(
-                  slice.content
+                  slice.content,
                 );
 
                 complete(text, {

@@ -51,6 +51,7 @@
     "stripe": "^16.1.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
+    "ts-pattern": "^5.5.0",
     "use-debounce": "^10.0.4",
     "zod": "^3.22.4",
     "zustand": "^4.5.4"
