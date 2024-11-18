@@ -59,6 +59,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
   }); // /api/chat
 
   const [messagesLoading, setMessagesLoading] = useState(true);
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
 
   const fetchMessages = async () => {
     const response = await fetch("/api/messages");
@@ -73,6 +74,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
   }, []);
 
   const handleDelete = async () => {
+    setDeleteInProgress(true);
     const data = await fetch("/api/chat", {
       method: "DELETE",
     });
@@ -80,10 +82,12 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
     console.log(data);
 
     fetchMessages();
+    setDeleteInProgress(false);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollToMessageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -132,6 +136,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               message={{ role: "assistant", content: "Thinking..." }}
             />
           )}
+          <div className="inset-y-44 bottom-0" ref={scrollToMessageRef} />
         </div>
         <div className="my-auto">
           {messagesLoading && (
@@ -166,14 +171,18 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
           }}
           className="sticky bottom-0 m-3 mt-5 flex flex-col gap-2 bg-background pb-5"
         >
-          {/* TODO: Fix scroll button */}
-          {messages.length > 0 && (
+          {messages.length > 0 && isLoading && (
             <div className="relative flex justify-center">
               <Button
                 variant="secondary"
                 size="icon"
                 className="absolute bottom-0 left-auto rounded-full hover:bg-slate-200"
-                onClick={() => {}}
+                onClick={() => {
+                  if (scrollToMessageRef.current)
+                    scrollToMessageRef.current.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                }}
               >
                 <ArrowDownCircle className="h-6 w-6" />
               </Button>
@@ -202,7 +211,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
               <Button
                 title="Regenerate response"
                 className="my-1 w-full rounded-xl text-xs md:my-0 md:w-[200px]"
-                disabled={isLoading}
+                disabled={isLoading || messagesLoading}
                 variant={"outline"}
                 onClick={(event: React.MouseEvent<HTMLButtonElement>) =>
                   reload()
@@ -215,7 +224,8 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
                 variant="outline"
                 className="my-1 w-full rounded-xl text-xs md:my-0 md:w-[200px]"
                 type="button"
-                disabled={isLoading}
+                disabled={isLoading || deleteInProgress}
+                isLoading={deleteInProgress}
                 onClick={handleDelete}
               >
                 <Trash className="h-4" /> Clear chat history
@@ -276,21 +286,23 @@ function ChatMessage({
           isAiMessage ? "me-5 justify-start" : "ms-5 justify-end",
         )}
       >
-        <div className="flex flex-col space-y-5">
-          <Button
-            title="Copy to clipboard"
-            className="mr-2"
-            variant={"ghost"}
-            size={"icon"}
-            onClick={() => {
-              navigator.clipboard.writeText(message.content);
-              toast.success("Copied to clipboard");
-            }}
-          >
-            <Copy className="shrink-0 text-primary" />
-          </Button>
-          {isAiMessage && <Bot className="ml-2 shrink-0 text-primary" />}
-        </div>
+        {!isLoading && (
+          <div className="flex flex-col space-y-5">
+            <Button
+              title="Copy to clipboard"
+              className="mr-2"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={() => {
+                navigator.clipboard.writeText(message.content);
+                toast.success("Copied to clipboard");
+              }}
+            >
+              <Copy className="shrink-0 text-primary" />
+            </Button>
+            {isAiMessage && <Bot className="ml-2 shrink-0 text-primary" />}
+          </div>
+        )}
         <div className="flex flex-col space-y-2">
           <p
             className={cn(
