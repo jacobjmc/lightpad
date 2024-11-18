@@ -113,7 +113,7 @@ const AIChatBox = ({ open, onClose }: AIChatBoxProps) => {
         "mx-auto mb-10 h-auto w-full items-center p-1 xl:max-w-[900px]",
       )}
     >
-      <div className="flex h-auto flex-col rounded-lg bg-white dark:bg-background lg:min-h-[600px]">
+      <div className="flex h-auto flex-col rounded-lg bg-white dark:bg-background lg:min-h-[700px] 2xl:min-h-[900px]">
         <p className="mx-auto mt-4 font-mono text-lg font-semibold text-muted-foreground">
           AI Chat
         </p>
