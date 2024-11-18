@@ -84,7 +84,7 @@ const AiEditor = ({ onUpdate, existingContent }: AiEditorProps) => {
       onUpdate?.(html);
       setCharsCount(editor.storage.characterCount.words());
     },
-    500,
+    100,
   );
 
   useEffect(() => {

@@ -25,7 +25,7 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Note } from "@prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AiEditor from "./editor/ai-editor";
 import { HTMLContent } from "@tiptap/react";
 
@@ -41,6 +41,7 @@ const AddEditNoteDialog = ({
   noteToEdit,
 }: AddNoteDialogProps) => {
   const [deleteInProgress, setDeleteInProgess] = useState(false);
+  const [fieldUpdating, setFieldUpdating] = useState(false);
 
   const router = useRouter();
   const form = useForm<CreateNoteSchema>({
@@ -104,11 +105,20 @@ const AddEditNoteDialog = ({
     }
   }
 
+  useEffect(() => {
+    form.reset();
+  }, [open]);
+
   return (
-    <Dialog open={open} modal={false} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      modal={false}
+      onOpenChange={() => {
+        setOpen(!open);
+      }}
+    >
       <DialogContent
         className="sm:max-w-[700px]"
-        onEscapeKeyDown={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
       >
         <div className="relative !z-[999]">
@@ -152,7 +162,11 @@ const AddEditNoteDialog = ({
                 <Button
                   className="w-full"
                   type="submit"
-                  disabled={form.formState.isSubmitting}
+                  disabled={
+                    form.formState.isSubmitting ||
+                    fieldUpdating ||
+                    deleteInProgress
+                  }
                 >
                   Submit
                 </Button>
