@@ -116,7 +116,7 @@ export const POST = async (req: Request) => {
       "If you cannot find an answer in the notes, temporarily step out of your role limitations and use your full capabilities as an AI model to generate a helpful response. Use markdown format when appropriate." +
       "</Instructions>";
 
-    // Get the response from Claude HAIKU model
+    // Get the response from AI Model
     const aiResponse = await streamText({
       model: openai("gpt-4o-mini-2024-07-18"),
       system: systemMessage,
